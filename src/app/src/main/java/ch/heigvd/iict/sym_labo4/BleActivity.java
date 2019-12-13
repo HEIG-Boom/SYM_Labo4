@@ -180,7 +180,7 @@ public class BleActivity extends BaseTemplateActivity {
             builderScanSettings.setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY);
             builderScanSettings.setReportDelay(0);
 
-            // Creation d'une liste de filtres
+            // Creation of filters list
             ArrayList<ScanFilter> filters = new ArrayList<>();
 
             // Create filter from UUID string
@@ -192,6 +192,7 @@ public class BleActivity extends BaseTemplateActivity {
             //reset display
             scanResultsAdapter.clear();
 
+            // Give the filters list as parameter to the bluetooth scanner
             bluetoothScanner.startScan(filters, builderScanSettings.build(), leScanCallback);
             Log.d(TAG, "Start scanning...");
             isScanning = true;
