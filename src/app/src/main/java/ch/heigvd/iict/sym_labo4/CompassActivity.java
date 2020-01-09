@@ -1,7 +1,9 @@
 package ch.heigvd.iict.sym_labo4;
 
 import android.opengl.GLSurfaceView;
+
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.os.Bundle;
 import android.view.Window;
 import android.view.WindowManager;
@@ -11,8 +13,8 @@ import ch.heigvd.iict.sym_labo4.gl.OpenGLRenderer;
 public class CompassActivity extends AppCompatActivity {
 
     //opengl
-    private OpenGLRenderer  opglr           = null;
-    private GLSurfaceView   m3DView         = null;
+    private OpenGLRenderer opglr = null;
+    private GLSurfaceView m3DView = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
