@@ -16,6 +16,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -65,6 +67,9 @@ public class BleActivity extends BaseTemplateActivity {
     private Handler handler = null;
     private boolean isScanning = false;
 
+    //Write temperature
+    private Button btnSendTemp = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,10 +87,14 @@ public class BleActivity extends BaseTemplateActivity {
         this.scanResults = findViewById(R.id.ble_scanresults);
         this.emptyScanResults = findViewById(R.id.ble_scanresults_empty);
 
+        this.btnSendTemp = findViewById(R.id.sendTime);
+
         //manage scanned item
         this.scanResultsAdapter = new ResultsAdapter(this);
         this.scanResults.setAdapter(this.scanResultsAdapter);
         this.scanResults.setEmptyView(this.emptyScanResults);
+
+        this.btnSendTemp.setVisibility(View.GONE);
 
         //connect to view model
         this.bleViewModel = ViewModelProviders.of(this).get(BleOperationsViewModel.class);
@@ -154,6 +163,8 @@ public class BleActivity extends BaseTemplateActivity {
         if (isConnected != null && isConnected) {
             this.scanPanel.setVisibility(View.GONE);
             this.operationPanel.setVisibility(View.VISIBLE);
+
+            this.btnSendTemp.setVisibility(View.VISIBLE);
 
             if (this.scanMenuBtn != null && this.disconnectMenuBtn != null) {
                 this.scanMenuBtn.setVisible(false);

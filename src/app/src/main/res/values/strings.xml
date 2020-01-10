@@ -17,5 +17,8 @@
 
     <string name="ble_sendvalue_title">Envoi de valeur</string>
     <string name="ble_sendvalue_send">Send</string>
+    <string name="btnSendTime">Send Time</string>
+    <string name="nbClicks">Number of clicks :</string>
+    <string name="zero">0</string>
 
 </resources>
