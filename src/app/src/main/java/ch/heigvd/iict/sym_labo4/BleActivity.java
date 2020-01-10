@@ -112,6 +112,12 @@ public class BleActivity extends BaseTemplateActivity {
         this.bleViewModel.isConnected().observe(this, (isConnected) -> {
             updateGui();
         });
+
+        // Read number of clicked buttons
+        this.bleViewModel.getButtonClicksCount().observe(this, counter -> {
+            TextView tvNbClicks = findViewById(R.id.tvNbClicks);
+            tvNbClicks.setText(counter.toString());
+        });
     }
 
     @Override
