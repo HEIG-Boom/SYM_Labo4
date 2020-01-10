@@ -64,8 +64,8 @@ public class BleActivity extends BaseTemplateActivity {
     private Handler handler = null;
     private boolean isScanning = false;
 
-    //Write temperature
-    private Button btnSendTemp = null;
+    //Write time
+    private Button btnSendTime = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,14 +84,12 @@ public class BleActivity extends BaseTemplateActivity {
         this.scanResults = findViewById(R.id.ble_scanresults);
         this.emptyScanResults = findViewById(R.id.ble_scanresults_empty);
 
-        this.btnSendTemp = findViewById(R.id.sendTime);
+        this.btnSendTime = findViewById(R.id.sendTime);
 
         //manage scanned item
         this.scanResultsAdapter = new ResultsAdapter(this);
         this.scanResults.setAdapter(this.scanResultsAdapter);
         this.scanResults.setEmptyView(this.emptyScanResults);
-
-        this.btnSendTemp.setVisibility(View.GONE);
 
         //connect to view model
         this.bleViewModel = ViewModelProviders.of(this).get(BleOperationsViewModel.class);
@@ -160,8 +158,6 @@ public class BleActivity extends BaseTemplateActivity {
         if (isConnected != null && isConnected) {
             this.scanPanel.setVisibility(View.GONE);
             this.operationPanel.setVisibility(View.VISIBLE);
-
-            this.btnSendTemp.setVisibility(View.VISIBLE);
 
             if (this.scanMenuBtn != null && this.disconnectMenuBtn != null) {
                 this.scanMenuBtn.setVisible(false);

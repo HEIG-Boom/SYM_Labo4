@@ -19,6 +19,7 @@ import java.util.UUID;
 
 import no.nordicsemi.android.ble.BleManager;
 import no.nordicsemi.android.ble.BleManagerCallbacks;
+import no.nordicsemi.android.ble.data.Data;
 
 public class BleOperationsViewModel extends AndroidViewModel {
 
@@ -31,6 +32,12 @@ public class BleOperationsViewModel extends AndroidViewModel {
     private final MutableLiveData<Boolean> mIsConnected = new MutableLiveData<>();
     public LiveData<Boolean> isConnected() {
         return mIsConnected;
+    }
+
+    //live data - temperature
+    private final MutableLiveData<Float> lastTemperature = new MutableLiveData<>();
+    public LiveData<Float> getTemperature() {
+        return lastTemperature;
     }
 
     //references to the Services and Characteristics of the SYM Pixl
@@ -242,6 +249,10 @@ public class BleOperationsViewModel extends AndroidViewModel {
                 des MutableLiveData
                 On placera des méthodes similaires pour les autres opérations...
             */
+            if (temperatureChar != null) {
+                lastTemperature.setValue(temperatureChar.getIntValue(Data.FORMAT_UINT16, 0) / 10f);
+                return true;
+            }
             return false; //FIXME
         }
     }

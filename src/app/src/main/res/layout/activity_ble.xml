@@ -39,6 +39,27 @@
                     android:id="@+id/tvNbClicks"
                     android:gravity="bottom"/>
             </LinearLayout>
+            <Button
+                android:id="@+id/getTemperature"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/btnGetTemperature"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/temperature"
+                    android:id="@+id/tvNbTemperatureLabel"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/zero"
+                    android:id="@+id/tvNbTemperature"
+                    android:gravity="bottom"/>
+            </LinearLayout>
 
 
 
