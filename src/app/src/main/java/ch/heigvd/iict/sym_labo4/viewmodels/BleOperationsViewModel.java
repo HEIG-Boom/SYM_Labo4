@@ -13,6 +13,13 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import no.nordicsemi.android.ble.BleManager;
 import no.nordicsemi.android.ble.BleManagerCallbacks;
 
@@ -156,11 +163,73 @@ public class BleOperationsViewModel extends AndroidViewModel {
          * BluetoothGatt callbacks object.
          */
         private final BleManagerGattCallback mGattCallback = new BleManagerGattCallback() {
+            final Map<String, String> neededServices = new HashMap<String, String>() {{
+                put("timeService", "00001805-0000-1000-8000-00805f9b34fb");
+                put("customService", "3c0a1000-281d-4b48-b2a7-f15579a1c38f");
+            }};
+
+            final Map<String, String> neededCharacteristics = new HashMap<String, String>() {{
+                put("currentTimeChar", "00002a2b-0000-1000-8000-00805f9b34fb");
+                put("intChar", "3c0a1001-281d-4b48-b2a7-f15579a1c38f");
+                put("temperatureChar", "3c0a1002-281d-4b48-b2a7-f15579a1c38f");
+                put("btnChar", "3c0a1003-281d-4b48-b2a7-f15579a1c38f");
+            }};
 
             @Override
             public boolean isRequiredServiceSupported(@NonNull final BluetoothGatt gatt) {
                 mConnection = gatt; //trick to force disconnection
+
                 Log.d(TAG, "isRequiredServiceSupported - discovered services:");
+
+                int availableNeededServices = 0;
+                int availableNeededChar = 0;
+
+                // Iterate through the available services
+                for (BluetoothGattService service : gatt.getServices()) {
+                    // Iterate through our needed services
+                    for (Map.Entry<String, String> neededUuid : neededServices.entrySet()) {
+                        String serviceUuid = service.getUuid().toString();
+
+                        // If the service is needed
+                        if (neededUuid.getValue().equals(serviceUuid)) {
+                            availableNeededServices++;
+
+                            // Store service instance
+                            if (serviceUuid.equals(neededServices.get("timeService"))) {
+                                timeService = service;
+                            }
+                            else if (serviceUuid.equals(neededServices.get("customService"))) {
+                                symService = service;
+                            }
+                        }
+                    }
+
+                    // Iterate through the available characteristics for this service
+                    for (BluetoothGattCharacteristic characteristic : service.getCharacteristics()) {
+                        // Iterate through our needed characteristics
+                        for (Map.Entry<String, String> neededChar : neededCharacteristics.entrySet()) {
+                            String charUuid = characteristic.getUuid().toString();
+
+                            if (neededChar.getValue().equals(charUuid)) {
+                                availableNeededChar++;
+
+                                // Store characteristic instance
+                                if (charUuid.equals(neededCharacteristics.get("currentTimeChar"))) {
+                                    currentTimeChar = characteristic;
+                                }
+                                else if (charUuid.equals(neededCharacteristics.get("intChar"))) {
+                                    integerChar = characteristic;
+                                }
+                                else if (charUuid.equals(neededCharacteristics.get("temperatureChar"))) {
+                                    temperatureChar = characteristic;
+                                }
+                                else if (charUuid.equals(neededCharacteristics.get("btnChar"))) {
+                                    buttonClickChar = characteristic;
+                                }
+                            }
+                        }
+                    }
+                }
 
                 /* TODO
                     - Nous devons vérifier ici que le périphérique auquel on vient de se connecter possède
@@ -171,7 +240,10 @@ public class BleOperationsViewModel extends AndroidViewModel {
                  */
 
                 //FIXME si tout est OK, on retourne true, sinon la librairie appelera la méthode onDeviceNotSupported()
-                return true;
+
+//                bleManagerCallbacks.onDeviceNotSupported();
+                return (availableNeededServices != neededServices.size()
+                        || availableNeededChar == neededCharacteristics.size());
             }
 
             @Override
