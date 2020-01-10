@@ -15,6 +15,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import no.nordicsemi.android.ble.BleManager;
 import no.nordicsemi.android.ble.BleManagerCallbacks;
@@ -177,58 +178,39 @@ public class BleOperationsViewModel extends AndroidViewModel {
 
                 Log.d(TAG, "isRequiredServiceSupported - discovered services:");
 
-                int availableNeededServices = 0;
-                int availableNeededChar = 0;
+                // Iterate through our needed services
+                for (Map.Entry<String, String> neededService : neededServices.entrySet()) {
+                    // Store service instance
+                    timeService = gatt.getService(UUID.fromString(neededServices.get("timeService")));
+                    symService = gatt.getService(UUID.fromString(neededServices.get("customService")));
 
-                // Iterate through the available services
-                for (BluetoothGattService service : gatt.getServices()) {
-                    // Iterate through our needed services
-                    for (Map.Entry<String, String> neededUuid : neededServices.entrySet()) {
-                        String serviceUuid = service.getUuid().toString();
-
-                        // If the service is needed
-                        if (neededUuid.getValue().equals(serviceUuid)) {
-                            availableNeededServices++;
-
-                            // Store service instance
-                            if (serviceUuid.equals(neededServices.get("timeService"))) {
-                                timeService = service;
-                            }
-                            else if (serviceUuid.equals(neededServices.get("customService"))) {
-                                symService = service;
-                            }
-                        }
-                    }
-
-                    // Iterate through the available characteristics for this service
-                    for (BluetoothGattCharacteristic characteristic : service.getCharacteristics()) {
-                        // Iterate through our needed characteristics
-                        for (Map.Entry<String, String> neededChar : neededCharacteristics.entrySet()) {
-                            String charUuid = characteristic.getUuid().toString();
-
-                            if (neededChar.getValue().equals(charUuid)) {
-                                availableNeededChar++;
-
-                                // Store characteristic instance
-                                if (charUuid.equals(neededCharacteristics.get("currentTimeChar"))) {
-                                    currentTimeChar = characteristic;
-                                }
-                                else if (charUuid.equals(neededCharacteristics.get("intChar"))) {
-                                    integerChar = characteristic;
-                                }
-                                else if (charUuid.equals(neededCharacteristics.get("temperatureChar"))) {
-                                    temperatureChar = characteristic;
-                                }
-                                else if (charUuid.equals(neededCharacteristics.get("btnChar"))) {
-                                    buttonClickChar = characteristic;
-                                }
-                            }
-                        }
+                    if (timeService == null || symService == null) {
+                        return false;
                     }
                 }
 
-                return (availableNeededServices != neededServices.size()
-                        || availableNeededChar != neededCharacteristics.size());
+                // Iterate through our needed characteristics
+                for (Map.Entry<String, String> neededChar : neededCharacteristics.entrySet()) {
+                    currentTimeChar = timeService.getCharacteristic(
+                            UUID.fromString(neededCharacteristics.get("currentTimeChar"))
+                    );
+                    integerChar = symService.getCharacteristic(
+                            UUID.fromString(neededCharacteristics.get("intChar"))
+                    );
+                    temperatureChar = symService.getCharacteristic(
+                            UUID.fromString(neededCharacteristics.get("temperatureChar"))
+                    );
+                    buttonClickChar = symService.getCharacteristic(
+                            UUID.fromString(neededCharacteristics.get("btnChar"))
+                    );
+
+                    if (currentTimeChar == null || integerChar == null
+                            || temperatureChar == null || buttonClickChar == null) {
+                        return false;
+                    }
+                }
+
+                return true;
             }
 
             @Override
