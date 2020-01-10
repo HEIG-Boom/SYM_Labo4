@@ -124,7 +124,13 @@ public class BleActivity extends BaseTemplateActivity {
         this.bleViewModel.getTemperature().observe(this, temperature -> {
             // Set the readed value to the GUI item
             TextView tvNbTemperature = findViewById(R.id.tvNbTemperature);
-            tvNbTemperature.setText(temperature.toString() +"°C");
+            tvNbTemperature.setText(temperature.toString() + "°C");
+        });
+
+        // Read number of clicked buttons
+        this.bleViewModel.getButtonClicksCount().observe(this, counter -> {
+            TextView tvNbClicks = findViewById(R.id.tvNbClicks);
+            tvNbClicks.setText(counter.toString());
         });
     }
 

@@ -28,25 +28,34 @@ public class BleOperationsViewModel extends AndroidViewModel {
     private MySymBleManager ble = null;
     private BluetoothGatt mConnection = null;
 
-    //live data - observer
+    // Live data - observer
     private final MutableLiveData<Boolean> mIsConnected = new MutableLiveData<>();
+
     public LiveData<Boolean> isConnected() {
         return mIsConnected;
     }
 
-    //live data - temperature
+    // Live data - temperature
     private final MutableLiveData<Integer> mTemperature = new MutableLiveData<>();
+
     public LiveData<Integer> getTemperature() {
         return mTemperature;
     }
 
-    //references to the Services and Characteristics of the SYM Pixl
+    // Live data on number of button clicks
+    private final MutableLiveData<Integer> mButtonClicks = new MutableLiveData<>();
+
+    public LiveData<Integer> getButtonClicksCount() {
+        return mButtonClicks;
+    }
+
+    // References to the Services and Characteristics of the SYM Pixl
     private BluetoothGattService timeService = null, symService = null;
     private BluetoothGattCharacteristic currentTimeChar = null, integerChar = null, temperatureChar = null, buttonClickChar = null;
 
     public BleOperationsViewModel(Application application) {
         super(application);
-        this.mIsConnected.setValue(false); //to be sure that it's never null
+        this.mIsConnected.setValue(false); // To be sure that it's never null
         this.ble = new MySymBleManager();
         this.ble.setGattCallbacks(this.bleManagerCallbacks);
     }
@@ -60,7 +69,7 @@ public class BleOperationsViewModel extends AndroidViewModel {
 
     public void connect(BluetoothDevice device) {
         Log.d(TAG, "User request connection to: " + device);
-        if(!mIsConnected.getValue()) {
+        if (!mIsConnected.getValue()) {
             this.ble.connect(device)
                     .retry(1, 100)
                     .useAutoConnect(false)
@@ -71,16 +80,17 @@ public class BleOperationsViewModel extends AndroidViewModel {
     public void disconnect() {
         Log.d(TAG, "User request disconnection");
         this.ble.disconnect();
-        if(mConnection != null) {
+        if (mConnection != null) {
             mConnection.disconnect();
         }
     }
+
     /* TODO
         vous pouvez placer ici les différentes méthodes permettant à l'utilisateur
         d'interagir avec le périphérique depuis l'activité
      */
     public boolean readTemperature() {
-        if(!isConnected().getValue() || temperatureChar == null) return false;
+        if (!isConnected().getValue() || temperatureChar == null) return false;
         return ble.readTemperature();
     }
 
@@ -161,7 +171,9 @@ public class BleOperationsViewModel extends AndroidViewModel {
         }
 
         @Override
-        public BleManagerGattCallback getGattCallback() { return mGattCallback; }
+        public BleManagerGattCallback getGattCallback() {
+            return mGattCallback;
+        }
 
         /**
          * BluetoothGatt callbacks object.
@@ -228,6 +240,13 @@ public class BleOperationsViewModel extends AndroidViewModel {
                     Dans notre cas il s'agit de s'enregistrer pour recevoir les notifications proposées par certaines
                     caractéristiques, on en profitera aussi pour mettre en place les callbacks correspondants.
                  */
+
+                // Register to number of button clicks service
+                mButtonClicks.setValue(0);
+                setNotificationCallback(buttonClickChar).with((device, data) -> {
+                    mButtonClicks.setValue(data.getIntValue(Data.FORMAT_UINT8, 0));
+                });
+                enableNotifications(buttonClickChar).enqueue();
             }
 
             @Override
