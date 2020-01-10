@@ -171,7 +171,7 @@ public class BleOperationsViewModel extends AndroidViewModel {
                  */
 
                 //FIXME si tout est OK, on retourne true, sinon la librairie appelera la méthode onDeviceNotSupported()
-                return false;
+                return true;
             }
 
             @Override
