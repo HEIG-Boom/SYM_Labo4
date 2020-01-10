@@ -235,6 +235,7 @@ public class BleOperationsViewModel extends AndroidViewModel {
                  */
 
                 // Register to number of button clicks service
+                mButtonClicks.setValue(0);
                 setNotificationCallback(buttonClickChar).with((device, data) -> {
                     mButtonClicks.setValue(data.getIntValue(Data.FORMAT_UINT8, 0));
                 });
