@@ -35,9 +35,9 @@ public class BleOperationsViewModel extends AndroidViewModel {
     }
 
     //live data - temperature
-    private final MutableLiveData<Float> lastTemperature = new MutableLiveData<>();
-    public LiveData<Float> getTemperature() {
-        return lastTemperature;
+    private final MutableLiveData<Integer> mTemperature = new MutableLiveData<>();
+    public LiveData<Integer> getTemperature() {
+        return mTemperature;
     }
 
     //references to the Services and Characteristics of the SYM Pixl
@@ -244,16 +244,11 @@ public class BleOperationsViewModel extends AndroidViewModel {
         };
 
         public boolean readTemperature() {
-            /* TODO on peut effectuer ici la lecture de la caractéristique température
-                la valeur récupérée sera envoyée à l'activité en utilisant le mécanisme
-                des MutableLiveData
-                On placera des méthodes similaires pour les autres opérations...
-            */
-            if (temperatureChar != null) {
-                lastTemperature.setValue(temperatureChar.getIntValue(Data.FORMAT_UINT16, 0) / 10f);
-                return true;
-            }
-            return false; //FIXME
+            // Read the temperature and push it in the event queue
+            readCharacteristic(temperatureChar).with((device, data) -> {
+                mTemperature.setValue(data.getIntValue(Data.FORMAT_UINT16, 0) / 10);
+            }).enqueue();
+            return true;
         }
     }
 }

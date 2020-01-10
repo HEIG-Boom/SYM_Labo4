@@ -67,6 +67,9 @@ public class BleActivity extends BaseTemplateActivity {
     //Write time
     private Button btnSendTime = null;
 
+    //Write temperature
+    private Button btnGetTemperature = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,6 +88,12 @@ public class BleActivity extends BaseTemplateActivity {
         this.emptyScanResults = findViewById(R.id.ble_scanresults_empty);
 
         this.btnSendTime = findViewById(R.id.sendTime);
+        this.btnGetTemperature = findViewById(R.id.getTemperature);
+
+        // add an on click listener to read temperature
+        btnGetTemperature.setOnClickListener(v -> {
+            bleViewModel.readTemperature();
+        });
 
         //manage scanned item
         this.scanResultsAdapter = new ResultsAdapter(this);
@@ -109,6 +118,13 @@ public class BleActivity extends BaseTemplateActivity {
         //ble events
         this.bleViewModel.isConnected().observe(this, (isConnected) -> {
             updateGui();
+        });
+
+        // Add an observer for the temperature change
+        this.bleViewModel.getTemperature().observe(this, temperature -> {
+            // Set the readed value to the GUI item
+            TextView tvNbTemperature = findViewById(R.id.tvNbTemperature);
+            tvNbTemperature.setText(temperature.toString() +"°C");
         });
     }
 
@@ -223,5 +239,4 @@ public class BleActivity extends BaseTemplateActivity {
             });
         }
     };
-
 }
