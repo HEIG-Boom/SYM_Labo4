@@ -243,7 +243,7 @@ public class BleOperationsViewModel extends AndroidViewModel {
 
 //                bleManagerCallbacks.onDeviceNotSupported();
                 return (availableNeededServices != neededServices.size()
-                        || availableNeededChar == neededCharacteristics.size());
+                        || availableNeededChar != neededCharacteristics.size());
             }
 
             @Override
