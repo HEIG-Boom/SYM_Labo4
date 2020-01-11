@@ -18,6 +18,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.lifecycle.ViewModelProviders;
@@ -66,6 +67,9 @@ public class BleActivity extends BaseTemplateActivity {
 
     //Write temperature
     private Button btnSendTemp = null;
+    // Send integer
+    private Button btnSendInt = null;
+    private Spinner spInteger = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,6 +89,8 @@ public class BleActivity extends BaseTemplateActivity {
         this.emptyScanResults = findViewById(R.id.ble_scanresults_empty);
 
         this.btnSendTemp = findViewById(R.id.sendTime);
+        btnSendInt = findViewById(R.id.btnInteger);
+        spInteger = findViewById(R.id.spInteger);
 
         //manage scanned item
         this.scanResultsAdapter = new ResultsAdapter(this);
@@ -117,6 +123,15 @@ public class BleActivity extends BaseTemplateActivity {
         this.bleViewModel.getButtonClicksCount().observe(this, counter -> {
             TextView tvNbClicks = findViewById(R.id.tvNbClicks);
             tvNbClicks.setText(counter.toString());
+        });
+
+        // Send integer to device
+        this.btnSendInt.setOnClickListener((t) -> {
+            Integer value = (Integer) spInteger.getSelectedItem();
+
+            if (value != null) {
+                bleViewModel.sendInteger(value);
+            }
         });
     }
 
@@ -233,5 +248,4 @@ public class BleActivity extends BaseTemplateActivity {
             });
         }
     };
-
 }

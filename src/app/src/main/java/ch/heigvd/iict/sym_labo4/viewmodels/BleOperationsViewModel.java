@@ -13,6 +13,8 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -85,6 +87,12 @@ public class BleOperationsViewModel extends AndroidViewModel {
     public boolean readTemperature() {
         if (!isConnected().getValue() || temperatureChar == null) return false;
         return ble.readTemperature();
+    }
+
+    public void sendInteger(int val) {
+        if (isConnected().getValue()) {
+            ble.sendInteger(val);
+        }
     }
 
     private BleManagerCallbacks bleManagerCallbacks = new BleManagerCallbacks() {
@@ -262,6 +270,13 @@ public class BleOperationsViewModel extends AndroidViewModel {
                 On placera des méthodes similaires pour les autres opérations...
             */
             return false; //FIXME
+        }
+
+        public void sendInteger(int val) {
+            ByteBuffer bb = ByteBuffer.allocate(4);
+            bb.putInt(val);
+            bb.order(ByteOrder.LITTLE_ENDIAN);
+            writeCharacteristic(integerChar, bb.array()).enqueue();
         }
     }
 }

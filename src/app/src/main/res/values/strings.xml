@@ -20,5 +20,7 @@
     <string name="btnSendTime">Send Time</string>
     <string name="nbClicks">Number of clicks :</string>
     <string name="zero">0</string>
+    <string name="integer">Integer to send :</string>
+    <string name="btnInteger">Send integer</string>
 
 </resources>
