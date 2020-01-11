@@ -37,6 +37,13 @@ public class BleOperationsViewModel extends AndroidViewModel {
         return mIsConnected;
     }
 
+    // Live data - temperature
+    private final MutableLiveData<Integer> mTemperature = new MutableLiveData<>();
+
+    public LiveData<Integer> getTemperature() {
+        return mTemperature;
+    }
+
     // Live data on number of button clicks
     private final MutableLiveData<Integer> mButtonClicks = new MutableLiveData<>();
 
@@ -264,12 +271,11 @@ public class BleOperationsViewModel extends AndroidViewModel {
         };
 
         public boolean readTemperature() {
-            /* TODO on peut effectuer ici la lecture de la caractéristique température
-                la valeur récupérée sera envoyée à l'activité en utilisant le mécanisme
-                des MutableLiveData
-                On placera des méthodes similaires pour les autres opérations...
-            */
-            return false; //FIXME
+            // Read the temperature and push it in the event queue
+            readCharacteristic(temperatureChar).with((device, data) -> {
+                mTemperature.setValue(data.getIntValue(Data.FORMAT_UINT16, 0) / 10);
+            }).enqueue();
+            return true;
         }
 
         public void sendInteger(int val) {

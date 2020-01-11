@@ -22,5 +22,6 @@
     <string name="zero">0</string>
     <string name="integer">Integer to send :</string>
     <string name="btnInteger">Send integer</string>
-
+    <string name="btnGetTemperature">Get Temperature</string>
+    <string name="temperature">Temperature :</string>
 </resources>

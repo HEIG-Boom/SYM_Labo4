@@ -65,8 +65,11 @@ public class BleActivity extends BaseTemplateActivity {
     private Handler handler = null;
     private boolean isScanning = false;
 
-    //Write temperature
-    private Button btnSendTemp = null;
+    //Write time
+    private Button btnSendTime = null;
+
+    // Get temperature
+    private Button btnGetTemperature = null;
     // Send integer
     private Button btnSendInt = null;
     private Spinner spInteger = null;
@@ -88,21 +91,25 @@ public class BleActivity extends BaseTemplateActivity {
         this.scanResults = findViewById(R.id.ble_scanresults);
         this.emptyScanResults = findViewById(R.id.ble_scanresults_empty);
 
-        this.btnSendTemp = findViewById(R.id.sendTime);
         btnSendInt = findViewById(R.id.btnInteger);
         spInteger = findViewById(R.id.spInteger);
+        btnSendTime = findViewById(R.id.sendTime);
+        btnGetTemperature = findViewById(R.id.getTemperature);
 
         //manage scanned item
         this.scanResultsAdapter = new ResultsAdapter(this);
         this.scanResults.setAdapter(this.scanResultsAdapter);
         this.scanResults.setEmptyView(this.emptyScanResults);
 
-        this.btnSendTemp.setVisibility(View.GONE);
-
         //connect to view model
         this.bleViewModel = ViewModelProviders.of(this).get(BleOperationsViewModel.class);
 
         updateGui();
+
+        // add an on click listener to read temperature
+        btnGetTemperature.setOnClickListener(v -> {
+            bleViewModel.readTemperature();
+        });
 
         //events
         this.scanResults.setOnItemClickListener((AdapterView<?> parent, View view, int position, long id) -> {
@@ -117,6 +124,13 @@ public class BleActivity extends BaseTemplateActivity {
         //ble events
         this.bleViewModel.isConnected().observe(this, (isConnected) -> {
             updateGui();
+        });
+
+        // Add an observer for the temperature change
+        this.bleViewModel.getTemperature().observe(this, temperature -> {
+            // Set the readed value to the GUI item
+            TextView tvNbTemperature = findViewById(R.id.tvNbTemperature);
+            tvNbTemperature.setText(temperature.toString() + "°C");
         });
 
         // Read number of clicked buttons
@@ -181,8 +195,6 @@ public class BleActivity extends BaseTemplateActivity {
         if (isConnected != null && isConnected) {
             this.scanPanel.setVisibility(View.GONE);
             this.operationPanel.setVisibility(View.VISIBLE);
-
-            this.btnSendTemp.setVisibility(View.VISIBLE);
 
             if (this.scanMenuBtn != null && this.disconnectMenuBtn != null) {
                 this.scanMenuBtn.setVisible(false);
