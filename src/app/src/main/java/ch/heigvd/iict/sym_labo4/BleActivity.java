@@ -30,11 +30,14 @@ import ch.heigvd.iict.sym_labo4.adapters.ResultsAdapter;
 import ch.heigvd.iict.sym_labo4.viewmodels.BleOperationsViewModel;
 
 /**
- * Project: Labo4
- * Created by fabien.dutoit on 09.08.2019
- * (C) 2019 - HEIG-VD, IICT
+ * Activity that communicates with an external device.
+ * It's a bluetooth communication
+ *
+ * @author Fabien Dutoit
+ * @author Modified by : Jael Dubey, Loris Gilliand, Mateo Tutic, Luc Wachter
+ * @version 1.0
+ * @since 2019-08-09
  */
-
 public class BleActivity extends BaseTemplateActivity {
 
     private static final String UUID = "3c0a1000-281d-4b48-b2a7-f15579a1c38f";
@@ -131,6 +134,12 @@ public class BleActivity extends BaseTemplateActivity {
             // Set the readed value to the GUI item
             TextView tvNbTemperature = findViewById(R.id.tvNbTemperature);
             tvNbTemperature.setText(temperature.toString() + "°C");
+        });
+
+        // Read the device time
+        this.bleViewModel.getTime().observe(this, time -> {
+            TextView tvTime = findViewById(R.id.tvTime);
+            tvTime.setText(time);
         });
 
         // Read number of clicked buttons

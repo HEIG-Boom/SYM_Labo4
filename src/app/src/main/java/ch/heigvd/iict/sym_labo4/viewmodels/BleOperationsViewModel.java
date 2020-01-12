@@ -15,6 +15,9 @@ import androidx.lifecycle.MutableLiveData;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -23,6 +26,14 @@ import no.nordicsemi.android.ble.BleManager;
 import no.nordicsemi.android.ble.BleManagerCallbacks;
 import no.nordicsemi.android.ble.data.Data;
 
+/**
+ * Handles all bluetooth operations and services proposed by a specific device.
+ *
+ * @author HEIG-VD
+ * @author Modified by : Jael Dubey, Loris Gilliand, Mateo Tutic, Luc Wachter
+ * @version 1.0
+ * @since 2019-12-06
+ */
 public class BleOperationsViewModel extends AndroidViewModel {
 
     private static final String TAG = BleOperationsViewModel.class.getSimpleName();
@@ -49,6 +60,13 @@ public class BleOperationsViewModel extends AndroidViewModel {
 
     public LiveData<Integer> getButtonClicksCount() {
         return mButtonClicks;
+    }
+
+    // Live data on the device time
+    private final MutableLiveData<String> mTime = new MutableLiveData<>();
+
+    public LiveData<String> getTime() {
+        return mTime;
     }
 
     // References to the Services and Characteristics of the SYM Pixl
@@ -255,6 +273,22 @@ public class BleOperationsViewModel extends AndroidViewModel {
                     mButtonClicks.setValue(data.getIntValue(Data.FORMAT_UINT8, 0));
                 });
                 enableNotifications(buttonClickChar).enqueue();
+
+                // Register to current time on the device
+                setNotificationCallback(currentTimeChar).with((device, data) -> {
+                    // Read current time based on official specification
+                    int year = data.getIntValue(Data.FORMAT_UINT16, 0);
+                    int month = data.getIntValue(Data.FORMAT_UINT8, 2);
+                    int day = data.getIntValue(Data.FORMAT_UINT8, 3);
+                    int hour = data.getIntValue(Data.FORMAT_UINT8, 4);
+                    int minutes = data.getIntValue(Data.FORMAT_UINT8, 5);
+                    int seconds = data.getIntValue(Data.FORMAT_UINT8, 6);
+
+                    // Format and parse the date
+                    DateFormat formatter = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+                    GregorianCalendar c = new GregorianCalendar(year, month - 1, day, hour, minutes, seconds);
+                    mTime.setValue(formatter.format(c.getTime()));
+                });
             }
 
             @Override

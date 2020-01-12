@@ -24,4 +24,5 @@
     <string name="btnInteger">Send integer</string>
     <string name="btnGetTemperature">Get Temperature</string>
     <string name="temperature">Temperature :</string>
+    <string name="time">Time :</string>
 </resources>
