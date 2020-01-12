@@ -277,18 +277,13 @@ public class BleOperationsViewModel extends AndroidViewModel {
                 // Register to current time on the device
                 setNotificationCallback(currentTimeChar).with((device, data) -> {
                     // Read current time based on official specification
-                    int year = data.getIntValue(Data.FORMAT_UINT16, 0);
-                    int month = data.getIntValue(Data.FORMAT_UINT8, 2);
-                    int day = data.getIntValue(Data.FORMAT_UINT8, 3);
-                    int hour = data.getIntValue(Data.FORMAT_UINT8, 4);
-                    int minutes = data.getIntValue(Data.FORMAT_UINT8, 5);
-                    int seconds = data.getIntValue(Data.FORMAT_UINT8, 6);
+                    String hour = Integer.toString(data.getIntValue(Data.FORMAT_UINT8, 4));
+                    String minutes = Integer.toString(data.getIntValue(Data.FORMAT_UINT8, 5));
+                    String seconds = Integer.toString(data.getIntValue(Data.FORMAT_UINT8, 6));
 
-                    // Format and parse the date
-                    DateFormat formatter = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
-                    GregorianCalendar c = new GregorianCalendar(year, month - 1, day, hour, minutes, seconds);
-                    mTime.setValue(formatter.format(c.getTime()));
+                    mTime.setValue(hour + ":" + minutes + ":" + seconds);
                 });
+                enableNotifications(currentTimeChar).enqueue();
             }
 
             @Override
