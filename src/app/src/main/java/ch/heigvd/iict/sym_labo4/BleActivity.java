@@ -151,8 +151,11 @@ public class BleActivity extends BaseTemplateActivity {
 
         // Send integer to device
         this.btnSendInt.setOnClickListener((t) -> {
-            Integer value = Integer.parseInt(etInteger.getText().toString());
-            bleViewModel.sendInteger(value);
+            String strValue = etInteger.getText().toString();
+            if (!strValue.equals("")) {
+                Integer value = Integer.parseInt(strValue);
+                bleViewModel.sendInteger(value);
+            }
         });
     }
 
