@@ -108,11 +108,7 @@ public class BleOperationsViewModel extends AndroidViewModel {
             mConnection.disconnect();
         }
     }
-
-    /* TODO
-        vous pouvez placer ici les différentes méthodes permettant à l'utilisateur
-        d'interagir avec le périphérique depuis l'activité
-     */
+    
     public boolean readTemperature() {
         if (!isConnected().getValue() || temperatureChar == null) return false;
         return ble.readTemperature();
@@ -269,13 +265,6 @@ public class BleOperationsViewModel extends AndroidViewModel {
 
             @Override
             protected void initialize() {
-                /* TODO
-                    Ici nous somme sûr que le périphérique possède bien tous les services et caractéristiques
-                    attendus et que nous y sommes connectés. Nous pouvous effectuer les premiers échanges BLE:
-                    Dans notre cas il s'agit de s'enregistrer pour recevoir les notifications proposées par certaines
-                    caractéristiques, on en profitera aussi pour mettre en place les callbacks correspondants.
-                 */
-
                 // Register to number of button clicks service
                 mButtonClicks.setValue(0);
                 setNotificationCallback(buttonClickChar).with((device, data) -> {
