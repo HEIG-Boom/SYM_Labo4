@@ -154,6 +154,11 @@ public class BleActivity extends BaseTemplateActivity {
             Integer value = Integer.parseInt(etInteger.getText().toString());
             bleViewModel.sendInteger(value);
         });
+
+        // Send current time to device
+        this.btnSendTime.setOnClickListener((t) -> {
+            bleViewModel.sendTime();
+        });
     }
 
     @Override

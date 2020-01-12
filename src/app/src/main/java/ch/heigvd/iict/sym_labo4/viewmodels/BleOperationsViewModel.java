@@ -15,9 +15,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.GregorianCalendar;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -40,6 +38,12 @@ public class BleOperationsViewModel extends AndroidViewModel {
 
     private MySymBleManager ble = null;
     private BluetoothGatt mConnection = null;
+
+    // Indexes on Current Time according to the official specifications
+    private final int CURRENT_TIME_SIZE = 10;
+    private final int HOUR_INDEX = 4;
+    private final int MINUTES_INDEX = 5;
+    private final int SECONDS_INDEX = 6;
 
     // Live data - observer
     private final MutableLiveData<Boolean> mIsConnected = new MutableLiveData<>();
@@ -118,6 +122,11 @@ public class BleOperationsViewModel extends AndroidViewModel {
         if (isConnected().getValue()) {
             ble.sendInteger(val);
         }
+    }
+
+    public boolean sendTime() {
+        if (!isConnected().getValue() || currentTimeChar == null) return false;
+        return ble.sendTime();
     }
 
     private BleManagerCallbacks bleManagerCallbacks = new BleManagerCallbacks() {
@@ -312,6 +321,23 @@ public class BleOperationsViewModel extends AndroidViewModel {
             bb.putInt(val);
             bb.order(ByteOrder.LITTLE_ENDIAN);
             writeCharacteristic(integerChar, bb.array()).enqueue();
+        }
+
+        public boolean sendTime() {
+            // Get the current time with the Calendar API
+            Calendar calendar = Calendar.getInstance();
+            Integer hour = calendar.get(Calendar.HOUR_OF_DAY);
+            Integer minutes = calendar.get(Calendar.MINUTE);
+            Integer seconds = calendar.get(Calendar.SECOND);
+
+            // Write to the device according to the official specification
+            byte buffer[] = new byte[CURRENT_TIME_SIZE];
+            buffer[HOUR_INDEX] = hour.byteValue();
+            buffer[MINUTES_INDEX] = minutes.byteValue();
+            buffer[SECONDS_INDEX] = seconds.byteValue();
+            writeCharacteristic(currentTimeChar, buffer).enqueue();
+
+            return true;
         }
     }
 }
