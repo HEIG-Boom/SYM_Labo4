@@ -66,10 +66,11 @@
                     android:layout_height="wrap_content"
                     android:text="@string/integer"
                     android:id="@+id/tvInteger"/>
-                <Spinner
-                    android:layout_width="wrap_content"
+                <EditText
+                    android:id="@+id/integerValue"
+                    android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/spInteger"/>
+                    android:inputType="phone" />
             </LinearLayout>
             <Button
                 android:layout_width="match_parent"

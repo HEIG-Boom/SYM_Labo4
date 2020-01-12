@@ -17,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -75,7 +76,7 @@ public class BleActivity extends BaseTemplateActivity {
     private Button btnGetTemperature = null;
     // Send integer
     private Button btnSendInt = null;
-    private Spinner spInteger = null;
+    private EditText etInteger = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,7 +96,7 @@ public class BleActivity extends BaseTemplateActivity {
         this.emptyScanResults = findViewById(R.id.ble_scanresults_empty);
 
         btnSendInt = findViewById(R.id.btnInteger);
-        spInteger = findViewById(R.id.spInteger);
+        etInteger = findViewById(R.id.integerValue);
         btnSendTime = findViewById(R.id.sendTime);
         btnGetTemperature = findViewById(R.id.getTemperature);
 
@@ -150,11 +151,8 @@ public class BleActivity extends BaseTemplateActivity {
 
         // Send integer to device
         this.btnSendInt.setOnClickListener((t) -> {
-            Integer value = (Integer) spInteger.getSelectedItem();
-
-            if (value != null) {
-                bleViewModel.sendInteger(value);
-            }
+            Integer value = Integer.parseInt(etInteger.getText().toString());
+            bleViewModel.sendInteger(value);
         });
     }
 
